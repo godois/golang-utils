@@ -5,11 +5,17 @@ import (
 	"fmt"
 )
 
+type Imposto struct {
+	Icms []string `xml:"imposto>ICMS>ICMS00>vICMS"`
+}
+
 func main(){
 
-	type Imposto struct {
-		Icms []string `xml:"imposto>ICMS>ICMS00>vICMS"`
-	}
+	loadXML(Imposto{Icms: []string{}})
+
+}
+
+func loadXML(refImposto Imposto){
 
 	data := `
         <det>
@@ -69,11 +75,10 @@ func main(){
                 </imposto>
             </det>`
 
-	v := Imposto{Icms: []string{}}
-	err := xml.Unmarshal([]byte(data), &v)
+	err := xml.Unmarshal([]byte(data), &refImposto)
 	if err != nil {
 		fmt.Printf("error: %v", err)
 		return
 	}
-	fmt.Printf("Names of people: %q", v)
+	fmt.Printf("Names of people: %q", refImposto)
 }
