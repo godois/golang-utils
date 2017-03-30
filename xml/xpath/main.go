@@ -1,21 +1,15 @@
 package main
 
 import (
-	"encoding/xml"
+	"log"
 	"fmt"
+	"gopkg.in/xmlpath.v1"
+	"strings"
 )
-
-type Imposto struct {
-	Icms []string `xml:"imposto>ICMS>ICMS00>vICMS"`
-}
 
 func main(){
 
-	loadXML(Imposto{Icms: []string{}})
-
-}
-
-func loadXML(refImposto Imposto){
+	path := xmlpath.MustCompile("/det/imposto/ICMS/ICMS00/vICMS")
 
 	data := `
         <det>
@@ -75,10 +69,12 @@ func loadXML(refImposto Imposto){
                 </imposto>
             </det>`
 
-	err := xml.Unmarshal([]byte(data), &refImposto)
+	root, err := xmlpath.Parse(strings.NewReader(data))
 	if err != nil {
-		fmt.Printf("error: %v", err)
-		return
+		log.Fatal(err)
 	}
-	fmt.Printf("Names of people: %q", refImposto)
+	if value, ok := path.String(root); ok {
+		fmt.Println("Found:", value)
+	}
+
 }
